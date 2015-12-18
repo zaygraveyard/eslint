@@ -61,6 +61,12 @@ This rule is aimed at ensuring consistent use of semicolons. You can decide whet
 
 ### Options
 
+The rule takes one option, a string, which could be "always", "never" or "always-except-oneline". The default is "always".
+
+You can set the option in configuration like this:
+
+#### "always"
+
 By using the default option, semicolons must be used any place where they are valid.
 
 ```json
@@ -90,6 +96,8 @@ object.method = function() {
     // ...
 };
 ```
+
+#### "never"
 
 If you want to enforce that semicolons are never used, switch the configuration to:
 
@@ -131,6 +139,54 @@ var name = "ESLint"
 ;(function() {
     // ...
 })()
+```
+
+#### "always-except-oneline"
+
+This option allows to omit the last semicolon when a block (including its braces) is contained in a single line.
+
+By configuring the rule as:
+
+```json
+semi: [2, "always-except-oneline"]
+```
+
+The following patterns are considered problems:
+
+```js
+/*eslint semi: [2, "always-except-oneline"]*/
+
+if (foo) { bar(); }          /*error Extra semicolon.*/
+
+if (foo) { bar(); baz(); }   /*error Extra semicolon.*/
+
+if (foo) {
+    bar()                   /*error Missing semicolon.*/
+}
+
+if (foo) {
+    bar();
+    baz()                   /*error Missing semicolon.*/
+}
+```
+
+And the following patterns are not considered problems:
+
+```js
+/*eslint semi: [2, "always-except-oneline"]*/
+
+if (foo) { bar() }
+
+if (foo) { bar(); baz() }
+
+if (foo) {
+    bar();
+}
+
+if (foo) {
+    bar();
+    baz();
+}
 ```
 
 ## When Not To Use It
