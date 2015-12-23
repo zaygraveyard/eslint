@@ -427,6 +427,7 @@ ruleTester.run("key-spacing", rule, {
 
     invalid: [{
         code: "var bat = function() { return { foo:bar, 'key': value }; };",
+        output: "var bat = function() { return { foo:bar, 'key':value }; };",
         options: [{
             beforeColon: false,
             afterColon: false
@@ -434,11 +435,13 @@ ruleTester.run("key-spacing", rule, {
         errors: [{ message: "Extra space before value for key \"key\".", type: "Identifier", line: 1, column: 49 }]
     }, {
         code: "var obj = { [ (a + b) ]:value };",
+        output: "var obj = { [ (a + b) ]: value };",
         options: [{}],
         parserOptions: { ecmaVersion: 6 },
         errors: [{ message: "Missing space before value for computed key \"a + b\".", type: "Identifier", line: 1, column: 25 }]
     }, {
         code: "fn({ foo:bar, 'key' :value });",
+        output: "fn({ foo:bar, 'key':value });",
         options: [{
             beforeColon: false,
             afterColon: false
@@ -446,6 +449,7 @@ ruleTester.run("key-spacing", rule, {
         errors: [{ message: "Extra space after key \"key\".", type: "Literal", line: 1, column: 15 }]
     }, {
         code: "var obj = {prop :(42)};",
+        output: "var obj = {prop : (42)};",
         options: [{
             beforeColon: true,
             afterColon: true
@@ -453,6 +457,7 @@ ruleTester.run("key-spacing", rule, {
         errors: [{ message: "Missing space before value for key \"prop\".", type: "Literal", line: 1, column: 18 }]
     }, {
         code: "({'a' : foo, b: bar() }).b();",
+        output: "({'a' : foo, b : bar() }).b();",
         options: [{
             beforeColon: true,
             afterColon: true
@@ -460,6 +465,7 @@ ruleTester.run("key-spacing", rule, {
         errors: [{ message: "Missing space after key \"b\".", type: "Identifier", line: 1, column: 14 }]
     }, {
         code: "({'a'  :foo(), b:  bar() }).b();",
+        output: "({'a' : foo(), b : bar() }).b();",
         options: [{
             beforeColon: true,
             afterColon: true
@@ -472,6 +478,7 @@ ruleTester.run("key-spacing", rule, {
         ]
     }, {
         code: "bar = { key:value };",
+        output: "bar = { key: value };",
         options: [{
             beforeColon: false,
             afterColon: true
@@ -482,6 +489,13 @@ ruleTester.run("key-spacing", rule, {
             "obj = {",
             "    key:   value,",
             "    foobar:fn(),",
+            "    'a'   : (2 * 2)",
+            "};"
+        ].join("\n"),
+        output: [
+            "obj = {",
+            "    key   : value,",
+            "    foobar: fn(),",
             "    'a'   : (2 * 2)",
             "};"
         ].join("\n"),
@@ -499,6 +513,14 @@ ruleTester.run("key-spacing", rule, {
             "    'a' : val,",
             "    foo:fn(),",
             "    b    :[42],",
+            "    c   :call()",
+            "}).a();"
+        ].join("\n"),
+        output: [
+            "({",
+            "    'a' :val,",
+            "    foo :fn(),",
+            "    b   :[42],",
             "    c   :call()",
             "}).a();"
         ].join("\n"),
@@ -522,6 +544,15 @@ ruleTester.run("key-spacing", rule, {
             "    [a] : value",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = {",
+            "    a:   fn(),",
+            "    'b': 42,",
+            "    foo: (bar),",
+            "    bat: 'valid',",
+            "    [a]: value",
+            "};"
+        ].join("\n"),
         options: [{
             align: "value"
         }],
@@ -539,6 +570,14 @@ ruleTester.run("key-spacing", rule, {
             "    b :  42,",
             "    foo :['a'],",
             "    bar : call()",
+            "};"
+        ].join("\n"),
+        output: [
+            "foo = {",
+            "    a :  value,",
+            "    b :  42,",
+            "    foo :['a'],",
+            "    bar :call()",
             "};"
         ].join("\n"),
         options: [{
@@ -560,6 +599,15 @@ ruleTester.run("key-spacing", rule, {
             "    fg:0",
             "})"
         ].join("\n"),
+        output: [
+            "({",
+            "    a  : 0,",
+            "    bcd: 0,",
+            "",
+            "    e : 0,",
+            "    fg: 0",
+            "})"
+        ].join("\n"),
         options: [{
             align: "colon"
         }],
@@ -575,6 +623,12 @@ ruleTester.run("key-spacing", rule, {
             "        longValueName,",
             "    key2",
             "        :anotherLongValue",
+            "};"
+        ].join("\n"),
+        output: [
+            "foo = {",
+            "    key:longValueName,",
+            "    key2:anotherLongValue",
             "};"
         ].join("\n"),
         options: [{
@@ -596,6 +650,16 @@ ruleTester.run("key-spacing", rule, {
             "    key123: 'forty two'",
             "};"
         ].join("\n"),
+        output: [
+            "foo = {",
+            "    key1:   42,",
+            "    // still the same group",
+            "    key12:  '42', /*",
+            "",
+            "    */",
+            "    key123: 'forty two'",
+            "};"
+        ].join("\n"),
         options: [{
             align: "value"
         }],
@@ -605,16 +669,19 @@ ruleTester.run("key-spacing", rule, {
         ]
     }, {
         code: "foo = { key:(1+2) };",
+        output: "foo = { key: (1+2) };",
         errors: [
             { message: "Missing space before value for key \"key\".", line: 1, column: 13, type: "BinaryExpression" }
         ]
     }, {
         code: "foo = { key:( ( (1+2) ) ) };",
+        output: "foo = { key: ( ( (1+2) ) ) };",
         errors: [
             { message: "Missing space before value for key \"key\".", line: 1, column: 13, type: "BinaryExpression" }
         ]
     }, {
         code: "var obj = {a  : 'foo', bar: 'bam'};",
+        output: "var obj = {a: 'foo', bar: 'bam'};",
         options: [{ align: "colon" }],
         errors: [
             { message: "Extra space after key \"a\".", line: 1, column: 12, type: "Identifier" }
@@ -624,6 +691,12 @@ ruleTester.run("key-spacing", rule, {
             "var x = {",
             "    foo: 10",
             "  , b   : 20",
+            "};"
+        ].join("\n"),
+        output: [
+            "var x = {",
+            "    foo: 10",
+            "  , b  : 20",
             "};"
         ].join("\n"),
         options: [{ align: "colon" }],
@@ -637,6 +710,12 @@ ruleTester.run("key-spacing", rule, {
             " /*lol*/  b : 20",
             "};"
         ].join("\n"),
+        output: [
+            "var x = {",
+            "        foo : 10,",
+            " /*lol*/  b   : 20",
+            "};"
+        ].join("\n"),
         options: [{ align: "colon", beforeColon: true }],
         errors: [
             { message: "Missing space after key \"b\".", line: 3, column: 11, type: "Identifier" }
@@ -645,6 +724,10 @@ ruleTester.run("key-spacing", rule, {
         code: [
             "obj = { key ",
             " :     longName };"
+        ].join("\n"),
+        output: [
+            "obj = { key ",
+            " : longName };"
         ].join("\n"),
         options: [{
             beforeColon: true,
@@ -661,6 +744,13 @@ ruleTester.run("key-spacing", rule, {
             "    baz: 456",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foobar: 123,",
+            "    prop,",
+            "    baz:    456",
+            "};"
+        ].join("\n"),
         parserOptions: { ecmaVersion: 6 },
         options: [{ "align": "value" }],
         errors: [
@@ -670,6 +760,13 @@ ruleTester.run("key-spacing", rule, {
         code: [
             "var obj = {",
             "    foobar:  123,",
+            "    prop,",
+            "    baz:    456",
+            "};"
+        ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foobar: 123,",
             "    prop,",
             "    baz:    456",
             "};"
@@ -687,6 +784,13 @@ ruleTester.run("key-spacing", rule, {
             "    baz: 456",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foobar: 123,",
+            "    method() { },",
+            "    baz:    456",
+            "};"
+        ].join("\n"),
         parserOptions: { ecmaVersion: 6 },
         options: [{ "align": "value" }],
         errors: [
@@ -696,6 +800,13 @@ ruleTester.run("key-spacing", rule, {
         code: [
             "var obj = {",
             "    foobar:  123,",
+            "    method() { },",
+            "    baz:    456",
+            "};"
+        ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foobar: 123,",
             "    method() { },",
             "    baz:    456",
             "};"
@@ -715,6 +826,15 @@ ruleTester.run("key-spacing", rule, {
             "    baz:    456",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foobar: 123,",
+            "    method() {",
+            "        return 42;",
+            "    },",
+            "    baz: 456",
+            "};"
+        ].join("\n"),
         parserOptions: { ecmaVersion: 6 },
         options: [{ "align": "value" }],
         errors: [
@@ -724,6 +844,12 @@ ruleTester.run("key-spacing", rule, {
         code: [
             "var obj = {",
             "    foo: foo",
+            "  , cats: cats",
+            "};"
+        ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foo : foo",
             "  , cats: cats",
             "};"
         ].join("\n"),
@@ -738,6 +864,12 @@ ruleTester.run("key-spacing", rule, {
             "  , cats:  cats",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = {",
+            "    foo : foo",
+            "  , cats: cats",
+            "};"
+        ].join("\n"),
         options: [{ "align": "colon" }],
         errors: [
             { message: "Extra space before value for key \"cats\".", line: 3, column: 12, type: "Identifier" }
@@ -745,6 +877,11 @@ ruleTester.run("key-spacing", rule, {
     }, {
         code: [
             "var obj = { foo: foo",
+            "          , cats: cats",
+            "};"
+        ].join("\n"),
+        output: [
+            "var obj = { foo : foo",
             "          , cats: cats",
             "};"
         ].join("\n"),
@@ -758,6 +895,11 @@ ruleTester.run("key-spacing", rule, {
             "          , cats: cats",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = { foo : foo",
+            "          , cats: cats",
+            "};"
+        ].join("\n"),
         options: [{ "align": "colon" }],
         errors: [
             { message: "Extra space after key \"foo\".", line: 1, column: 13, type: "Identifier" }
@@ -765,6 +907,11 @@ ruleTester.run("key-spacing", rule, {
     }, {
         code: [
             "var obj = { foo :foo",
+            "          , cats: cats",
+            "};"
+        ].join("\n"),
+        output: [
+            "var obj = { foo : foo",
             "          , cats: cats",
             "};"
         ].join("\n"),
@@ -778,6 +925,11 @@ ruleTester.run("key-spacing", rule, {
             "          , cats: cats",
             "};"
         ].join("\n"),
+        output: [
+            "var obj = { foo : foo",
+            "          , cats: cats",
+            "};"
+        ].join("\n"),
         options: [{ "align": "colon" }],
         errors: [
             { message: "Extra space before value for key \"foo\".", line: 1, column: 20, type: "Identifier" }
@@ -786,6 +938,11 @@ ruleTester.run("key-spacing", rule, {
         code: [
             "var obj = { foo : foo",
             "          , cats:  cats",
+            "};"
+        ].join("\n"),
+        output: [
+            "var obj = { foo : foo",
+            "          , cats: cats",
             "};"
         ].join("\n"),
         options: [{ "align": "colon" }],
